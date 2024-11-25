@@ -12,7 +12,18 @@
   <script>
     const externalPageUrl = 'https://siddhbose-kivtechs.github.io/ai-product-main/'; // Replace with your actual URL
 
-    // Function to load the external page
+    function resolveUrl(base, relative) {
+      const stack = base.split('/');
+      const parts = relative.split('/');
+      stack.pop();
+      for (const part of parts) {
+        if (part === '.') continue;
+        if (part === '..') stack.pop();
+        else stack.push(part);
+      }
+      return stack.join('/');
+    }
+
     function loadExternalPage(url) {
       fetch(url)
         .then(response => {
@@ -29,31 +40,32 @@
           doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
             const newLink = document.createElement('link');
             newLink.rel = 'stylesheet';
-            newLink.href = link.href;
+            newLink.href = resolveUrl(url, link.getAttribute('href'));
             document.head.appendChild(newLink);
           });
 
           // Load scripts
-          doc.querySelectorAll('script').forEach(script => {
-            if (script.src) {
-              const newScript = document.createElement('script');
-              newScript.src = script.src;
-              document.body.appendChild(newScript);
-            } else if (script.textContent) {
-              const inlineScript = document.createElement('script');
-              inlineScript.textContent = script.textContent;
-              document.body.appendChild(inlineScript);
-            }
+          doc.querySelectorAll('script[src]').forEach(script => {
+            const newScript = document.createElement('script');
+            newScript.src = resolveUrl(url, script.getAttribute('src'));
+            newScript.async = false; // Ensure correct execution order
+            document.body.appendChild(newScript);
           });
 
-          // Inject the main content into the container
+          // Handle inline scripts
+          doc.querySelectorAll('script:not([src])').forEach(script => {
+            const inlineScript = document.createElement('script');
+            inlineScript.textContent = script.textContent;
+            document.body.appendChild(inlineScript);
+          });
+
+          // Inject main content
           const container = document.getElementById('external-container');
           container.innerHTML = doc.body.innerHTML;
         })
         .catch(error => console.error('Error loading external page:', error));
     }
 
-    // Load the external page
     loadExternalPage(externalPageUrl);
   </script>
 </body>
