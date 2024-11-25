@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM Manipulation</title>
+</head>
+<body>
+  <h1>Inject External Page Content</h1>
+  <div id="container">Loading content...</div>
+
+  <script>
+    fetch('https://siddhbose-kivtechs.github.io/ai-product-main/')
+      .then(response => response.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const mainContent = doc.querySelector('section.grid--container');
+        document.getElementById('container').appendChild(mainContent);
+      })
+      .catch(error => console.error('Error loading content:', error));
+  </script>
+</body>
+</html>
