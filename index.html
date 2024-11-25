@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Template Loading</title>
+  <style>
+    /* Add some styling for better presentation */
+    .loaded-content {
+      padding: 20px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dynamic Content Loading Example</h1>
+
+  <!-- Placeholder for dynamic content -->
+  <template id="external-content"></template>
+
+  <script>
+    const _ext_html = 'https://siddhbose-kivtechs.github.io/ai-product-main/';
+    const template = document.getElementById('external-content');
+
+    // Fetch the external HTML content
+    fetch(_ext_html)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.text();
+      })
+      .then(html => {
+        // Parse the fetched HTML string into a document fragment
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // Extract and append CSS links
+        const head = document.head;
+        doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+          head.appendChild(link.cloneNode(true));
+        });
+
+        // Extract and append JavaScript files
+        const body = document.body;
+        doc.querySelectorAll('script').forEach(script => {
+          const newScript = document.createElement('script');
+          if (script.src) {
+            newScript.src = script.src; // External script
+          } else {
+            newScript.textContent = script.textContent; // Inline script
+          }
+          body.appendChild(newScript);
+        });
+
+        // Add the fetched content to the template
+        template.innerHTML = doc.body.innerHTML;
+
+        // Clone and append the template's content to the body
+        const loadedContent = template.content.cloneNode(true);
+        const wrapper = document.createElement('div');
+        wrapper.className = 'loaded-content';
+        wrapper.appendChild(loadedContent);
+        document.body.appendChild(wrapper);
+      })
+      .catch(error => console.error('Error loading external content:', error));
+  </script>
+</body>
+</html>
