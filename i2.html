@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AJAX Page Load</title>
+  <style>
+    #content {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Load Page with AJAX</h1>
+  <button onclick="loadPage()">Load Content</button>
+  <div id="content">Content will be loaded here.</div>
+
+  <script>
+    function loadPage() {
+      fetch('https://siddhbose-kivtechs.github.io/ai-product-main/')
+        .then(response => {
+          if (!response.ok) throw new Error('Error loading content');
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          document.getElementById('content').innerText = `Failed to load: ${error.message}`;
+        });
+    }
+  </script>
+</body>
+</html>
