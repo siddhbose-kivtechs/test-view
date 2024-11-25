@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Load External Page Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    #iframe-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    iframe {
+      width: 100%;
+      height: 90%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Main Page</h1>
+  <div id="iframe-container">
+    <!-- The iframe embeds the secondary page -->
+    <iframe 
+      src="https://siddhbose-kivtechs.github.io/ai-product-main/" 
+      title="Secondary Page">
+    </iframe>
+  </div>
+</body>
+</html>
