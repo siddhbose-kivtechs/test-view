@@ -10,12 +10,12 @@
   <div id="external-container"></div>
 
   <script>
-    const externalPageUrl = 'https://siddhbose-kivtechs.github.io/ai-product-main/'; // Replace with your actual URL
+    const externalPageUrl = 'https://siddhbose-kivtechs.github.io/ai-product-main/'; // Replace with your URL
 
     function resolveUrl(base, relative) {
       const stack = base.split('/');
       const parts = relative.split('/');
-      stack.pop();
+      stack.pop(); // Remove current file name
       for (const part of parts) {
         if (part === '.') continue;
         if (part === '..') stack.pop();
@@ -44,15 +44,15 @@
             document.head.appendChild(newLink);
           });
 
-          // Load scripts
+          // Load external scripts
           doc.querySelectorAll('script[src]').forEach(script => {
             const newScript = document.createElement('script');
             newScript.src = resolveUrl(url, script.getAttribute('src'));
-            newScript.async = false; // Ensure correct execution order
+            newScript.defer = true; // Ensures scripts load in order
             document.body.appendChild(newScript);
           });
 
-          // Handle inline scripts
+          // Execute inline scripts
           doc.querySelectorAll('script:not([src])').forEach(script => {
             const inlineScript = document.createElement('script');
             inlineScript.textContent = script.textContent;
@@ -66,6 +66,7 @@
         .catch(error => console.error('Error loading external page:', error));
     }
 
+    // Load the external page
     loadExternalPage(externalPageUrl);
   </script>
 </body>
