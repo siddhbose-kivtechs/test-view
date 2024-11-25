@@ -3,69 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamic Template Loading</title>
-  <style>
-    /* Add some styling for better presentation */
-    .loaded-content {
-      padding: 20px;
-      border: 1px solid #ccc;
-      margin-top: 20px;
-      background-color: #f9f9f9;
-    }
-  </style>
+  <title>Load External Page Example</title>
 </head>
 <body>
-  <h1>Dynamic Content Loading Example</h1>
-
-  <!-- Placeholder for dynamic content -->
-  <template id="external-content"></template>
+  <h1>Main Page</h1>
+  <div id="external-container"></div>
 
   <script>
-    const _ext_html = 'https://siddhbose-kivtechs.github.io/ai-product-main/';
-    const template = document.getElementById('external-content');
+    const externalPageUrl = 'external-page.html'; // Replace with your actual URL
 
-    // Fetch the external HTML content
-    fetch(_ext_html)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.text();
-      })
-      .then(html => {
-        // Parse the fetched HTML string into a document fragment
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-
-        // Extract and append CSS links
-        const head = document.head;
-        doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
-          head.appendChild(link.cloneNode(true));
-        });
-
-        // Extract and append JavaScript files
-        const body = document.body;
-        doc.querySelectorAll('script').forEach(script => {
-          const newScript = document.createElement('script');
-          if (script.src) {
-            newScript.src = script.src; // External script
-          } else {
-            newScript.textContent = script.textContent; // Inline script
+    // Function to load the external page
+    function loadExternalPage(url) {
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
           }
-          body.appendChild(newScript);
-        });
+          return response.text();
+        })
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
 
-        // Add the fetched content to the template
-        template.innerHTML = doc.body.innerHTML;
+          // Load stylesheets
+          doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+            const newLink = document.createElement('link');
+            newLink.rel = 'stylesheet';
+            newLink.href = link.href;
+            document.head.appendChild(newLink);
+          });
 
-        // Clone and append the template's content to the body
-        const loadedContent = template.content.cloneNode(true);
-        const wrapper = document.createElement('div');
-        wrapper.className = 'loaded-content';
-        wrapper.appendChild(loadedContent);
-        document.body.appendChild(wrapper);
-      })
-      .catch(error => console.error('Error loading external content:', error));
+          // Load scripts
+          doc.querySelectorAll('script').forEach(script => {
+            if (script.src) {
+              const newScript = document.createElement('script');
+              newScript.src = script.src;
+              document.body.appendChild(newScript);
+            } else if (script.textContent) {
+              const inlineScript = document.createElement('script');
+              inlineScript.textContent = script.textContent;
+              document.body.appendChild(inlineScript);
+            }
+          });
+
+          // Inject the main content into the container
+          const container = document.getElementById('external-container');
+          container.innerHTML = doc.body.innerHTML;
+        })
+        .catch(error => console.error('Error loading external page:', error));
+    }
+
+    // Load the external page
+    loadExternalPage(externalPageUrl);
   </script>
 </body>
 </html>
